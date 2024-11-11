@@ -1,0 +1,464 @@
+﻿<Window x:Class="XamDataGrid_CheckAll.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:igWPF="http://schemas.infragistics.com/xaml/wpf"
+        xmlns:igDP="http://infragistics.com/DataPresenter"
+        xmlns:igThemes="http://infragistics.com/Themes"
+        xmlns:prim="http://schemas.infragistics.com/xaml/primitives"
+        xmlns:igWindows="http://infragistics.com/Windows"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:XamDataGrid_CheckAll"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <igWPF:XamDataGrid x:Name="xamDataGrid1" DataSource="{Binding GridData}" CellChanged="xamDataGrid1_CellChanged">
+            <igWPF:XamDataGrid.Resources>
+
+                <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+
+                <Style x:Key="LabelContentStyle" TargetType="{x:Type ContentControl}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ContentControl}">
+                                <ContentPresenter
+						Margin="{TemplateBinding Padding}"
+						Content="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"
+						ContentTemplate="{TemplateBinding ContentTemplate}"
+						ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
+                <Style x:Key="CheckBoxLabelPresenter" TargetType="{x:Type igDP:LabelPresenter}" BasedOn="{x:Static igThemes:DataPresenterGeneric.LabelPresenter}">
+                    <Setter Property="Padding" Value="0,0,0,0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type igDP:LabelPresenter}">
+                                <ControlTemplate.Resources>
+                                    <Storyboard x:Key="sbHighlightOn">
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="highlight">
+                                            <SplineDoubleKeyFrame Value="0" KeyTime="00:00:00"/>
+                                            <SplineDoubleKeyFrame Value="1" KeyTime="00:00:00.1670000"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="fishHeadHighlight">
+                                            <SplineDoubleKeyFrame Value="0" KeyTime="00:00:00"/>
+                                            <SplineDoubleKeyFrame Value="1" KeyTime="00:00:00.1670000"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                    <Storyboard x:Key="sbHighlightOff">
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="highlight">
+                                            <SplineDoubleKeyFrame Value="0" KeyTime="00:00:00.25"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="fishHeadHighlight">
+                                            <SplineDoubleKeyFrame Value="0" KeyTime="00:00:00.25"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                    <Storyboard x:Key="SigmaFadeIn">
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="SummaryButton" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00.2000000" Value="1"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FixedButton" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00.2000000" Value="1"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                    <Storyboard x:Key="SigmaFadeOut">
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="SummaryButton" Storyboard.TargetProperty="(UIElement.Opacity)" FillBehavior="Stop">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0.4"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FixedButton" Storyboard.TargetProperty="(UIElement.Opacity)" FillBehavior="Stop">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0.4"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                    <Storyboard x:Key="SigmaFadeInFilterButton">
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FilterButton" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00.2000000" Value="1"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                    <Storyboard x:Key="SigmaFadeOutFilterButton">
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FilterButton" Storyboard.TargetProperty="(UIElement.Opacity)" FillBehavior="Stop">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0.4"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </ControlTemplate.Resources>
+                                <Grid x:Name="labelCntr" Margin="{TemplateBinding Padding}" Background="#00000000" prim:XamlHelper.SnapsToDevicePixels="True">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition x:Name="fishColumn" Width="0"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Background Bar -->
+                                    <Border
+								HorizontalAlignment="Stretch"
+								VerticalAlignment="Stretch"
+								Width="Auto"
+								Height="Auto"
+								RenderTransformOrigin="0.5,0.5"
+								CornerRadius="{DynamicResource {ComponentResourceKey TypeInTargetAssembly={x:Type igDP:XamDataGrid}, ResourceId=LabelCornerRadius}}"
+								SnapsToDevicePixels="True"
+								Background="{TemplateBinding Background}"
+								x:Name="background"
+								BorderBrush="{TemplateBinding OuterBorderBrush}"
+								BorderThickness="1,0,1,1"/>
+                                    <!-- End Background Bar -->
+                                    <!-- Highlight -->
+                                    <Border
+								x:Name="highlight"
+								Opacity="1"
+								HorizontalAlignment="Stretch"
+								VerticalAlignment="Stretch"
+								Width="Auto"
+								Height="Auto"
+								CornerRadius="0,0,0,0"
+								Background="{TemplateBinding LabelHighlight}"
+								Margin="0,0,0,0"
+								BorderBrush="#FF96D9F9"
+								BorderThickness="1,0,1,1"
+								Visibility="Collapsed"/>
+                                    <Border
+								x:Name="highlight_2"
+								Opacity="1"
+								Width="Auto"
+								Height="Auto"
+								CornerRadius="0,0,0,0"
+								Background="{DynamicResource {ComponentResourceKey TypeInTargetAssembly={x:Type igDP:XamDataGrid}, ResourceId=LabelHighlight2}}"
+								Visibility="Collapsed"
+								Margin="0,0,0,0"
+								BorderBrush="#FF96D9F9"
+								BorderThickness="1,0,1,1"/>
+                                    <Border
+								x:Name="WhiteInnerBorder"
+								Background="{x:Null}"
+								BorderThickness="1,0,1,0"
+								BorderBrush="#FFFFFFFF"
+								Margin="1,0,1,1"/>
+                                    <Path x:Name="fishHeadOuterStroke" SnapsToDevicePixels="True" Visibility="Collapsed" Fill="{TemplateBinding OuterBorderBrush}" Grid.Column="1" Stretch="Fill" Data="M 0,20 C0,20 8,12 8,12 9,11 9,9 8,8 8,8 0,0 0,0 0,0 0,20 0,20 z" />
+                                    <Path x:Name="fishHead" SnapsToDevicePixels="True" Visibility="Collapsed" Fill="{TemplateBinding Background}" Grid.Column="1" Margin="0,1,1,1" Stretch="Fill" Data="M 0,20 C0,20 8,12 8,12 9,11 9,9 8,8 8,8 0,0 0,0 0,0 0,20 0,20 z" />
+                                    <!-- JJD 04/16/12 - TFS109233
+									Initialize the fishHeadHighlight Opacity to 0 so it won't be visible until the IsMouseOver MultiTrigger below -->
+                                    <Path x:Name="fishHeadHighlight" Opacity="0" SnapsToDevicePixels="True" Fill="{TemplateBinding LabelHighlight}" Visibility="Collapsed" Grid.Column="1" Margin="0,1,1,1" Stretch="Fill" Data="M 0,20 C0,20 8,12 8,12 9,11 9,9 8,8 8,8 0,0 0,0 0,0 0,20 0,20 z"/>
+                                    <Grid x:Name="sortIndicatorAndLabel">
+                                        <!-- End Label Text -->
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <igWindows:SortIndicator
+								x:Name="SortIndicator"
+								SortStatus="{TemplateBinding SortStatus}"
+								Grid.Row="1"
+								Grid.Column="1"
+								Visibility="Collapsed"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"
+								Margin="0,0,5,0"/>
+                                        <!-- Label Text -->
+                                        <ContentControl
+								Grid.Row="1"
+								x:Name="LabelContent"
+								Style="{StaticResource LabelContentStyle}"
+								Content="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"
+								ContentTemplate="{TemplateBinding ContentTemplate}"
+								ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+								HorizontalAlignment="Stretch"
+								Margin="7,2,7,6"
+								VerticalAlignment="Center"
+								Grid.RowSpan="1"
+								Grid.ColumnSpan="1"/>
+<!--ヘッダーチェックボックスここから-->
+                                <CheckBox x:Name="checkAll" Width="18" Height="18" Grid.Column="2" Grid.Row="1" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" />
+<!--ヘッダーチェックボックスここまで-->
+                                        <!-- SSP 3/31/08 - Summaries Functionality -->
+                                        <igDP:SummaryButton
+								x:Name="SummaryButton"
+								Field="{TemplateBinding Field}"
+								Visibility="{Binding Path=Field.AllowSummariesResolved, Converter={StaticResource BoolToVisConverter}, RelativeSource={RelativeSource TemplatedParent}}"
+								HorizontalAlignment="Stretch"
+								VerticalAlignment="Stretch"
+								Width="Auto"
+								Grid.Column="2"
+								Grid.Row="0"
+								Margin="0,0,0,0"
+								Grid.RowSpan="2"
+								Opacity="0.4"
+								d:LayoutOverrides="Width, GridBox"/>
+                                        <!-- JJD 1/06/09 - Filtering Functionality -->
+                                        <igDP:FilterButton
+								x:Name="FilterButton"
+								Field="{TemplateBinding Field}"
+								Visibility="{TemplateBinding FilterButtonVisibility}"
+								HorizontalAlignment="Left"
+								VerticalAlignment="Center"
+								Width="Auto"
+								Grid.Column="3"
+								Grid.RowSpan="2"
+								Opacity="0.4"
+								Margin="0,0,3,0"/>
+                                        <!-- JM 1/14/09 - Fixed Fields Functionality -->
+                                        <igDP:FixedFieldButton
+								x:Name="FixedButton"
+								Field="{TemplateBinding Field}"
+								Visibility="{TemplateBinding FixedButtonVisibility}"
+								HorizontalAlignment="Left"
+								VerticalAlignment="Center"
+								Width="Auto"
+								Grid.Column="4"
+								Grid.RowSpan="2"
+								Margin="2,0,2,0"
+								Opacity="0.4"/>
+                                    </Grid>
+                                    <Border
+							BorderThickness="1,1,1,0"
+							x:Name="pressed_border2"
+							BorderBrush="#FF7A9EB1"
+							Width="Auto"
+							Height="Auto"
+							Margin="0,0,0,0"
+							Visibility="Collapsed"/>
+                                    <Border
+							BorderThickness="1,1,1,0"
+							x:Name="pressed_border3"
+							BorderBrush="#CC70B9DE"
+							Width="Auto"
+							Height="Auto"
+							Margin="1,1,1,0"
+							Visibility="Collapsed"/>
+                                    <!-- End Highlight -->
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Path=IsInGroupByArea, RelativeSource={RelativeSource Self}}" Value="False">
+                                        <Setter Property="Margin" TargetName="background" Value="-1,0,0,0" />
+                                        <Setter Property="Margin" TargetName="WhiteInnerBorder" Value="0,0,1,1" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=IsDragIndicator, RelativeSource={RelativeSource Self}}" Value="True">
+                                        <Setter Property="Margin" TargetName="background" Value="0,0,0,0" />
+                                        <Setter Property="Margin" TargetName="WhiteInnerBorder" Value="1,0,1,1" />
+                                    </DataTrigger>
+                                    <!-- IsDragSource -->
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Path=IsDragSource, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                            <Condition Binding="{Binding Path=IsInGroupByArea, RelativeSource={RelativeSource Self}}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" TargetName="pressed_border2" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="pressed_border3" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="WhiteInnerBorder" Value="Collapsed"/>
+                                        <Setter Property="BorderThickness" TargetName="highlight" Value="1,0,1,0"/>
+                                        <Setter Property="Margin" TargetName="LabelContent" Value="8,3,6,5"/>
+                                        <Setter Property="Visibility" TargetName="highlight" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="highlight_2" Value="Visible"/>
+                                    </MultiDataTrigger>
+
+                                    <!-- IsPressed -->
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Path=IsPressed, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                            <Condition Binding="{Binding Path=IsInGroupByArea, RelativeSource={RelativeSource Self}}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" TargetName="pressed_border2" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="pressed_border3" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="WhiteInnerBorder" Value="Collapsed"/>
+                                        <Setter Property="BorderThickness" TargetName="highlight" Value="1,0,1,0"/>
+                                        <Setter Property="Margin" TargetName="LabelContent" Value="8,3,6,5"/>
+                                    </MultiDataTrigger>
+
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition SourceName="FilterButton" Property="HasActiveFilters" Value="False"/>
+                                            <Condition Property="IsMouseOver" Value="True"/>
+                                        </MultiTrigger.Conditions>
+                                        <!-- JM 04-09-09 Comment these animations out for now to address TFS 16564.  This bug was discovered as we were getting ready to release
+											 the April 2009 9.1 Hotfix and is caused by a bug in the WPF framework that we will need to work around by
+											 replacing this MultiTrigger with a MultiDataTrigger. -->
+                                        <!--<MultiTrigger.EnterActions>
+                                <BeginStoryboard x:Name="SigmaFadeIn_FB_BeginStoryboard" Storyboard="{StaticResource SigmaFadeInFilterButton}"/>
+                            </MultiTrigger.EnterActions>
+                            <MultiTrigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource SigmaFadeOutFilterButton}" x:Name="SigmaFadeOut_FB_BeginStoryboard"/>
+                                <RemoveStoryboard BeginStoryboardName="SigmaFadeIn_FB_BeginStoryboard"/>
+                            </MultiTrigger.ExitActions>-->
+                                        <Setter TargetName="FilterButton" Property="Opacity" Value="1"/>
+                                    </MultiTrigger>
+                                    <Trigger SourceName="FilterButton" Property="HasActiveFilters" Value="True">
+                                        <Setter TargetName="FilterButton" Property="Opacity" Value="1"/>
+                                    </Trigger>
+                                    <!-- HighlightPrimary -->
+                                    <Trigger Property="HighlightAsPrimary" Value="true">
+                                        <Setter Property="Visibility" TargetName="highlight" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="WhiteInnerBorder" Value="Collapsed"/>
+                                    </Trigger>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsPressed" Value="False"/>
+                                            <Condition Property="SortStatus" Value="Ascending"/>
+                                        </MultiTrigger.Conditions>
+                                        <Setter TargetName="SortIndicator" Property="Visibility" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="highlight_2" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="WhiteInnerBorder" Value="Collapsed"/>
+                                    </MultiTrigger>
+
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsPressed" Value="False"/>
+                                            <Condition Property="SortStatus" Value="Descending"/>
+                                        </MultiTrigger.Conditions>
+                                        <!-- JJD 8/24/11 - TFS82886
+                  Moved Setter for SortIndicator Visibility into separate trigger below
+                  so that it is always visible when SortStatus is Descending
+                  regardless if IsPressed is true or false -->
+                                        <!--<Setter TargetName="SortIndicator" Property="Visibility" Value="Visible"/>-->
+                                        <Setter Property="Visibility" TargetName="highlight_2" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="WhiteInnerBorder" Value="Collapsed"/>
+                                    </MultiTrigger>
+
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsPressed" Value="False"/>
+                                            <Condition Property="SortStatus" Value="Ascending"/>
+                                        </MultiTrigger.Conditions>
+                                        <!-- JJD 8/24/11 - TFS82886
+                  Moved Setter for SortIndicator Visibility into separate trigger below
+                  so that it is always visible when SortStatus is Ascending
+                  regardless if IsPressed is true or false -->
+                                        <!--<Setter TargetName="SortIndicator" Property="Visibility" Value="Visible"/>-->
+                                        <Setter Property="Visibility" TargetName="highlight_2" Value="Visible"/>
+                                        <Setter Property="Visibility" TargetName="WhiteInnerBorder" Value="Collapsed"/>
+                                    </MultiTrigger>
+
+                                    <!-- JJD 8/24/11 - TFS82886
+                Created new trigger for setting SortIndicator Visibility
+                so that it is always visible when SortStatus is Ascending  -->
+                                    <Trigger Property="SortStatus" Value="Ascending">
+                                        <Setter TargetName="SortIndicator" Property="Visibility" Value="Visible"/>
+                                    </Trigger>
+
+                                    <!-- JJD 8/24/11 - TFS82886
+                Created new trigger for setting SortIndicator Visibility
+                so that it is always visible when SortStatus is Descending  -->
+                                    <Trigger Property="SortStatus" Value="Descending">
+                                        <Setter TargetName="SortIndicator" Property="Visibility" Value="Visible"/>
+                                    </Trigger>
+
+                                    <DataTrigger Binding="{Binding Path=IsInGroupByArea, RelativeSource={RelativeSource Self}}" Value="True">
+                                        <Setter TargetName="FixedButton" Property="Visibility" Value="Collapsed"/>
+                                        <Setter TargetName="SummaryButton" Property="Visibility" Value="Collapsed" />
+                                        <Setter TargetName="background" Property="BorderThickness" Value="1,1,0,1"/>
+                                        <Setter TargetName="highlight" Property="BorderThickness" Value="1,1,0,1"/>
+                                        <Setter TargetName="highlight_2" Property="BorderThickness" Value="1,1,0,1"/>
+                                        <Setter TargetName="WhiteInnerBorder" Property="BorderThickness" Value="1,0,0,0"/>
+                                        <Setter TargetName="fishHeadOuterStroke" Property="Visibility" Value="Visible"/>
+                                        <Setter TargetName="fishHead" Property="Visibility" Value="Visible"/>
+                                        <!-- JJD 04/16/12 - TFS109233
+								set fishHeadHighlight element visible when in group by area since we are
+							    now initializing its Opacity to 0 it won't be visible until the IsMouseOver MultiTrigger below -->
+                                        <Setter TargetName="fishHeadHighlight" Property="Visibility" Value="Visible"/>
+                                        <Setter TargetName="fishColumn" Property="Width" Value="14"/>
+                                        <Setter TargetName="LabelContent" Property="Margin" Value="7,4"/>
+                                        <Setter Property="Visibility" TargetName="pressed_border2" Value="Collapsed"/>
+                                        <Setter Property="Visibility" TargetName="pressed_border3" Value="Collapsed"/>
+                                        <Setter Property="Visibility" TargetName="highlight_2" Value="Collapsed"/>
+                                    </DataTrigger>
+
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Path=Field.(igDP:GroupByAreaMulti.HasOffsetY), RelativeSource={RelativeSource Self}}" Value="False"/>
+                                            <Condition Binding="{Binding Path=IsInGroupByArea, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter TargetName="labelCntr" Property="Margin" Value="-24,0,0,0"/>
+                                    </MultiDataTrigger>
+
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Path=Field.(igDP:GroupByAreaMulti.HasOffsetY), RelativeSource={RelativeSource Self}}" Value="False"/>
+                                            <Condition Binding="{Binding Path=IsInGroupByArea, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                            <Condition Binding="{Binding Path=Field.(igDP:GroupByAreaMulti.IsFirstInList), RelativeSource={RelativeSource Self}}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter TargetName="sortIndicatorAndLabel" Property="Margin" Value="20,0,0,0"/>
+                                    </MultiDataTrigger>
+
+                                    <DataTrigger Binding="{Binding Path=Field.(igDP:GroupByAreaMulti.IsFirstInList), RelativeSource={RelativeSource Self}}" Value="True">
+                                        <Setter TargetName="labelCntr" Property="Margin" Value="0"/>
+                                    </DataTrigger>
+
+                                    <!--IsMouseOver -->
+                                    <!--SSP 6/24/09 - NAS9.2 Field Chooser - Changed from Trigger to MultiTrigger-->
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsMouseOver" Value="True" />
+                                            <!--SSP 6/24/09 - NAS9.2 Field Chooser - We don't want to loose the selected highlight when mouse
+								is hovered over a field in the field chooser. Especially this causes the field label to not
+								appear selected when mouse is clicked over it while the mouse is still over the field label.-->
+                                            <Condition Property="IsSelectedInFieldChooser" Value="False"/>
+                                        </MultiTrigger.Conditions>
+                                        <MultiTrigger.EnterActions>
+                                            <BeginStoryboard Storyboard="{StaticResource SigmaFadeIn}" x:Name="SigmaFadeIn_BeginStoryboard"/>
+                                        </MultiTrigger.EnterActions>
+                                        <MultiTrigger.ExitActions>
+                                            <BeginStoryboard Storyboard="{StaticResource SigmaFadeOut}" x:Name="SigmaFadeOut_BeginStoryboard"/>
+                                        </MultiTrigger.ExitActions>
+                                        <Setter Property="Visibility" TargetName="highlight" Value="Visible"/>
+                                        <!-- JJD 04/16/12 - TFS109233
+								fishHeadHighlight element should only be visible in group by area so instead of
+							    settung it Visible set its Opacity to 1. If it is in the group by area it will become visible
+							<Setter Property="Visibility" TargetName="fishHeadHighlight" Value="Visible"/>-->
+                                        <Setter Property="Opacity" TargetName="fishHeadHighlight" Value="1"/>
+                                        <Setter Property="Visibility" TargetName="WhiteInnerBorder" Value="Collapsed"/>
+                                    </MultiTrigger>
+
+                                    <!--SSP 6/23/09 - NAS9.2 Field Chooser
+							If the label is in a field chooser then hide the sort indicator, filter button and
+							summary button. Note that the fixed button is collapsed in code in label presenter
+							by coercing the FixedButtonVisibility property to be Collapsed.-->
+                                    <Trigger Property="IsInFieldChooser" Value="true">
+                                        <Setter TargetName="SortIndicator" Property="Visibility" Value="Collapsed" />
+                                        <Setter TargetName="FilterButton" Property="Visibility" Value="Collapsed" />
+                                        <Setter TargetName="FixedButton" Property="Visibility" Value="Collapsed"/>
+                                        <Setter TargetName="SummaryButton" Property="Visibility" Value="Collapsed" />
+                                    </Trigger>
+
+                                    <Trigger Property="IsDragIndicator" Value="True">
+                                        <Setter TargetName="sortIndicatorAndLabel" Property="Margin" Value="0"/>
+                                        <Setter TargetName="labelCntr" Property="Margin" Value="0"/>
+                                    </Trigger>
+
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="LabelHighlight" Value="{DynamicResource {ComponentResourceKey TypeInTargetAssembly={x:Type igDP:XamDataGrid}, ResourceId=LabelHighlight}}"/>
+                </Style>
+                
+            </igWPF:XamDataGrid.Resources>
+            <igWPF:XamDataGrid.FieldSettings>
+                <igDP:FieldSettings AllowRecordFiltering="True" FilterLabelIconDropDownType="MultiSelectExcelStyle"/>
+            </igWPF:XamDataGrid.FieldSettings>
+            <igWPF:XamDataGrid.FieldLayoutSettings>
+                <igWPF:FieldLayoutSettings AutoGenerateFields="False" FilterUIType="LabelIcons"/>
+            </igWPF:XamDataGrid.FieldLayoutSettings>
+            <igWPF:XamDataGrid.FieldLayouts>
+                <igWPF:FieldLayout>
+                    <igWPF:FieldLayout.Fields>
+                        <igWPF:Field Name="Id" IsReadOnly="True"/>
+                        <igWPF:CheckBoxField Name="Test1" >
+                            <igWPF:Field.Settings >
+                                <igWPF:FieldSettings DataItemUpdateTrigger="OnCellValueChange" LabelPresenterStyle="{StaticResource CheckBoxLabelPresenter}" />
+                            </igWPF:Field.Settings>
+                        </igWPF:CheckBoxField>
+                        <igWPF:Field Name="Test2"/>
+                    </igWPF:FieldLayout.Fields>
+                </igWPF:FieldLayout>
+            </igWPF:XamDataGrid.FieldLayouts>
+        </igWPF:XamDataGrid>
+    </Grid>
+</Window>
